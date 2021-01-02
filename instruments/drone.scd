@@ -11,10 +11,15 @@ SynthDef.new("drone", {
 	*/
 	arg base_frequency=110, amplitude=0.05, duration=5;
 
+	//Some hard-coded "parameters" or pre-calculation that you don't necessarily want to change.
+	var attack = min(1, duration / 2); //Attack duration in seconds. If the duration is 2 seconds or less, there is no sustain.
+	var decay = min(1, duration / 2); //Decay duration in seconds.
+	var sustain = duration - attack - decay;
+
 	//Define an envelope for the main attack and decay.
 	var attack_decay = EnvGen.ar(
-		Env.linen(1, 1, 1)
-	, timeScale:duration / 3, doneAction: Done.freeSelf);
+		Env.linen(attack, sustain, decay)
+	, timeScale: 1, doneAction: Done.freeSelf);
 
 	var base_note;
 	base_note = SinOsc.ar(base_frequency, 0, amplitude);
