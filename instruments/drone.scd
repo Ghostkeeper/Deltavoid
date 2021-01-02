@@ -21,9 +21,12 @@ SynthDef.new("drone", {
 		Env.linen(attack, sustain, decay)
 	, timeScale: 1, doneAction: Done.freeSelf);
 
-	var base_note;
-	base_note = SinOsc.ar(base_frequency, 0, amplitude);
+	//The base note, low and loud.
+	var base_note = SinOsc.ar(base_frequency, 0, amplitude);
+	var wobble = SinOsc.ar(1, mul: 0.05, add: 0.95); //Wobble the volume slowly and subtly.
+	base_note = base_note * wobble;
+
 	Out.ar(0, base_note * attack_decay);
 }).add;
 
-var test = Synth("drone", ["base_frequency", 110, "duration", 3]);
+var test = Synth("drone", ["base_frequency", 110, "duration", 10]);
