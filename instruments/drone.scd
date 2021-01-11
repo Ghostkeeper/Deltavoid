@@ -23,7 +23,12 @@ SynthDef.new("drone", {
 	, timeScale: 1, doneAction: Done.freeSelf);
 
 	//The base note, low and loud.
-	var base_note = LFCub.ar(base_frequency, 0, 2 / 3);
+	var base_note = LFCub.ar(base_frequency, 0, 0.9)
+	              + LFPar.ar(base_frequency * 1.01, 0.2, 0.1 / 4)
+	              + LFPar.ar(base_frequency * 1.015, 0.4, 0.1 / 4)
+	              + LFPar.ar(base_frequency * 1.02, 0.6, 0.1 / 4)
+	              + LFPar.ar(base_frequency * 1.025, 0.8, 0.1 / 4)
+	              * 2 / 3;
 	var wobble = SinOsc.ar(2, mul: 0.1, add: 0.9); //Wobble the volume slowly and subtly.
 	var timbre = VarSaw.ar(base_frequency / 2, 0, 0.5, 1 / 6);
 	timbre = timbre + VarSaw.ar(base_frequency / 2, 0.2, 0.5, 1 / 6);
@@ -40,4 +45,4 @@ SynthDef.new("drone", {
 	Out.ar(0, base_note * attack_decay * amplitude);
 }).add;
 
-var test = Synth("drone", ["base_frequency", 110, "duration", 3]);
+var test = Synth("drone", ["base_frequency", 110, "duration", 8]);
