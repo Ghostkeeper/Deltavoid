@@ -45,4 +45,5 @@ SynthDef.new("drone", {
 	Out.ar(0, base_note * attack_decay * amplitude);
 }).add;
 
-var test = Synth("drone", ["base_frequency", 110, "duration", 8]);
+//Example:
+//Synth("drone", ["base_frequency", 110, "duration", 8]);
