@@ -1,4 +1,4 @@
-//Bright bleep, but with a slightly slow onset.
+//Bright electronic bleep, but with a slightly slow onset.
 //The title of this synthdef is not a typo. It's spelled "blleep" on purpose to describe that slightly delayed onset.
 
 SynthDef.new("blleep", {
@@ -7,7 +7,7 @@ SynthDef.new("blleep", {
 	- base_frequency: Lowest tone of the sound.
 	- amplitude: Overall loudness of the sound.
 	*/
-	arg base_frequency=440, amplitude=0.05;
+	arg frequency=440, amplitude=0.05;
 
 	//Some hard-coded "parameters" or pre-calculation that you don't necessarily want to change.
 	var attack = 0.005; //Very swift actual attack.
@@ -16,8 +16,12 @@ SynthDef.new("blleep", {
 	var duration = 0.1;
 
 	//Main waveform determining the type of sound this bleep creates.
-	var wave = LFTri.ar(base_frequency, 0, 1/3) + SinOsc.ar(base_frequency * 2, 0.5, 1/2) + Blip.ar(base_frequency, 200, 1/6);
-	var overtone = SinOsc.ar(base_frequency * 2, 0, 0.5);
+	var wave = SinOsc.ar(frequency / 2, 0, 2/10)
+	+ SinOsc.ar(frequency, 0.5, 5/10)
+	+ SinOsc.ar(frequency * 0.6, 0, 1/10)
+	+ SinOsc.ar(frequency * 1.2, 0, 1/10)
+	+ Blip.ar(frequency, 100, 1/10);
+	var overtone = SinOsc.ar(frequency * 2, 0, 0.5);
 
 	var attack_decay_initial = EnvGen.ar(
 		Env.new(
@@ -30,15 +34,16 @@ SynthDef.new("blleep", {
 	var attack_decay_main = EnvGen.ar(
 		Env.new(
 			levels: [0.01, 0.01, 1, 0.01],
-			times: [second_delay, attack, duration - attack]
+			times: [second_delay, attack, duration - attack],
+			curve: \sin
 		)
 	, timeScale: 1, doneAction: Done.freeSelf);
 
 	var attack_decay_overtone = EnvGen.ar(
 		Env.new(
 			levels: [0.01, 0.01, 1, 0.01, 0.01],
-			times: [second_delay, attack, duration / 4 - attack, duration * 3/4],
-			curve: \exp
+			times: [second_delay, attack, duration / 2 - attack, duration /2],
+			curve: 20
 		)
 	, timeScale: 1, doneAction: Done.freeSelf);
 
@@ -50,4 +55,4 @@ SynthDef.new("blleep", {
 }).add;
 
 //Example:
-Synth("blleep", ["base_frequency", 1760, "duration", 8]);
+Synth("blleep", ["frequency", 1760, "duration", 8]);
