@@ -7,7 +7,7 @@ SynthDef.new("blleep", {
 	- base_frequency: Lowest tone of the sound.
 	- amplitude: Overall loudness of the sound.
 	*/
-	arg frequency=440, amplitude=0.05;
+	arg frequency=440, amplitude=0.05, pan=0.5;
 
 	//Some hard-coded "parameters" or pre-calculation that you don't necessarily want to change.
 	var attack = 0.005; //Very swift actual attack.
@@ -48,11 +48,11 @@ SynthDef.new("blleep", {
 	, timeScale: 1, doneAction: Done.freeSelf);
 
 	Out.ar(0,
-		(wave * initial_amplitude * attack_decay_initial)
-		+ (wave * attack_decay_main)
-		+ (overtone * attack_decay_overtone)
+		Pan2.ar(wave * initial_amplitude * attack_decay_initial, 0-pan)
+		+ Pan2.ar(wave * attack_decay_main, pan)
+		+ Pan2.ar(overtone * attack_decay_overtone, pan)
 		* amplitude);
 }).add;
 
 //Example:
-Synth("blleep", ["frequency", 1760, "duration", 8]);
+Synth("blleep", ["frequency", 1760]);
