@@ -17,11 +17,12 @@ SynthDef.new("flute", {
 		//Repeat the same noise pattern with reverberation.
 		//The delay in reverberation is precisely the duration of the frequency so that it produces the base note.
 		//Has a distinct saw-wave like effect due to the sharp part of the noise being more prominent.
-		signal = signal + DelayC.ar(signal, 4.0 / frequency, 4.0 / frequency, 0.5);
+		var reverberation = DelayL.ar(signal, 4.0 / frequency, 4.0 / frequency, 0.5);
+
+		signal = signal + reverberation;
 	};
 	//High-pass filter and low-pass filter on the reverb noise produce a brass-like effect.
-	signal = LPF.ar(signal, frequency * 1.1);
-	signal = HPF.ar(signal, frequency * 0.9);
+	signal = Resonz.ar(signal, frequency, 0.75);
 
 	//Combine the brass sound with an organ-like sum of sine waves to produce the flute sound.
 
