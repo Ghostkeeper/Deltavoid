@@ -45,4 +45,4 @@ SynthDef.new("flute", {
 }).add;
 )
 
-Synth("flute", ["frequency", 440, "amplitude", 0.01])
+Synth("flute", ["frequency", 72.midicps, "amplitude", 0.1])
