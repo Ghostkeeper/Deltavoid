@@ -11,8 +11,7 @@ SynthDef.new("flute", {
 	//Less important parameters to tune the sound to actually make it sound like a flute.
 	var noise_resonators = 6; //How often the noise profile is resonating.
 	var resonant_cutoff = 2000; //Waveform collapses in flute above this frequency due to width of the tube not being able to sustain those frequencies.
-	var num_undertones = 0; //The salient frequency is the highest of the constant-amplitude waves, and will be set to frequency. Add a number of octaves below it with equal amplitude.
-	var num_overtones = 3; //Overtones decay in amplitude.
+	var num_overtones = 2;
 
 	//Variables we'll need later.
 	var tone;
@@ -33,9 +32,14 @@ SynthDef.new("flute", {
 	wind = Resonz.ar(wind, frequency, 0.75);
 
 	//Combine the brass sound with a frequency-modulated base tone that makes the basic "dry" sound of the flute.
-	tone = SinOsc.ar(frequency + LFTri.ar(SinOsc.kr(6, 0, 1, frequency), 0, frequency))
-	     + SinOsc.ar(frequency * 1.5 + LFTri.ar(SinOsc.kr(6.5, 0, 1, frequency), 1/4, frequency))
-	     / 2;
+	tone = SinOsc.ar(frequency + LFTri.ar(SinOsc.kr(6, 0, 1, frequency), 0, frequency));
+	num_overtones.do {
+		arg overtone_index;
+		var overtone_multiplier = 2 ** overtone_index;
+
+		tone = tone + SinOsc.ar(frequency * overtone_multiplier + LFTri.ar(SinOsc.kr(6.5, 0, 1, frequency), 1 / overtone_multiplier, frequency));
+	};
+	tone = tone / (1 + num_overtones);
 
 	Out.ar(0,
 		wind * 0.1
