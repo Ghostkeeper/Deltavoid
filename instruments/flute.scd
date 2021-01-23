@@ -23,8 +23,9 @@ SynthDef.new("flute", {
 		//Repeat the same noise pattern with reverberation.
 		//The delay in reverberation is precisely the duration of the frequency so that it produces the base note.
 		//Has a distinct saw-wave like effect due to the sharp part of the noise being more prominent.
-		var reverberation = DelayL.ar(wind, 1.0 / frequency, 1.0 / frequency, 0.5);
+		var reverberation = DelayL.ar(wind, 1 / frequency / 32, 1 / frequency / 32, 0.5);
 		reverberation = LPF.ar(reverberation, resonant_cutoff); //Dampen with maximum standing waveform.
+		reverberation = HPF.ar(reverberation, frequency);
 
 		wind = wind + reverberation;
 	};
@@ -37,7 +38,7 @@ SynthDef.new("flute", {
 	     / 2;
 
 	Out.ar(0,
-		wind * 0.5
+		wind * 0.1
 		+ tone
 		* amplitude);
 
