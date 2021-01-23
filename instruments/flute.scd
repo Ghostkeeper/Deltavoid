@@ -14,8 +14,8 @@ SynthDef.new("flute", {
 	var num_undertones = 0; //The salient frequency is the highest of the constant-amplitude waves, and will be set to frequency. Add a number of octaves below it with equal amplitude.
 	var num_overtones = 3; //Overtones decay in amplitude.
 
-
-	var tone = SinOsc.ar(frequency);
+	//Variables we'll need later.
+	var tone;
 
 	//Start with the noise profile as baseline.
 	var wind = LFNoise0.ar(SampleRate.ir);
@@ -31,17 +31,10 @@ SynthDef.new("flute", {
 	//Resonant filter on the reverb noise produce a brass-like effect.
 	wind = Resonz.ar(wind, frequency, 0.75);
 
-	//Combine the brass sound with an organ-like sum of sine waves to produce the flute sound.
-	//First a number of overtones of equal amplitude.
-	num_undertones.do {
-		arg undertone_index;
-		tone = tone + LFSaw.ar(frequency / (2 ** (undertone_index + 1)));
-	};
-	num_overtones.do {
-		arg overtone_index;
-		var overtone_multiplier = 2 ** (overtone_index + 1);
-		tone = tone + LFTri.ar(frequency * overtone_multiplier, 0, 1.0 / overtone_multiplier);
-	};
+	//Combine the brass sound with a frequency-modulated base tone that makes the basic "dry" sound of the flute.
+	tone = SinOsc.ar(frequency + LFTri.ar(SinOsc.kr(6, 0, 1, frequency), 0, frequency))
+	     + SinOsc.ar(frequency * 1.5 + LFTri.ar(SinOsc.kr(6.5, 0, 1, frequency), 1/4, frequency))
+	     / 2;
 
 	Out.ar(0,
 		wind * 0.5
