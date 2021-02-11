@@ -31,8 +31,8 @@ SynthDef.new("flute", {
 	tone = tone / (1 + num_overtones);
 
 	Out.ar(0,
-		wind * 0.1
-		+ tone
+		tone
+		* (0.7 + (wind * 0.3))
 		* amplitude);
 
 }).add;
