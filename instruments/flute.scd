@@ -16,7 +16,7 @@ SynthDef.new("flute", {
 	var tone;
 
 	//Start with the noise profile as baseline.
-	var wind = LFClipNoise.ar(SampleRate.ir);
+	var wind = LFClipNoise.ar(SampleRate.ir / 3);
 	//Resonant filter on the noise produce a brass-like effect.
 	wind = Resonz.ar(wind, frequency, 0.75);
 
