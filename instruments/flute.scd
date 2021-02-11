@@ -21,12 +21,12 @@ SynthDef.new("flute", {
 	wind = Resonz.ar(wind, frequency, 0.75);
 
 	//Combine the brass sound with a frequency-modulated base tone that makes the basic "dry" sound of the flute.
-	tone = SinOsc.ar(frequency + LFTri.ar(SinOsc.kr(6, 0, 1, frequency), 0, frequency));
+	tone = SinOsc.ar(frequency + LFTri.ar(SinOsc.kr(6, 0, 1, frequency * 4), 0, frequency / 2));
 	num_overtones.do {
 		arg overtone_index;
 		var overtone_multiplier = 2 ** overtone_index;
 
-		tone = tone + SinOsc.ar(frequency * overtone_multiplier + LFTri.ar(SinOsc.kr(6.5, 0, 1, frequency), 1 / overtone_multiplier, frequency));
+		tone = tone + SinOsc.ar(frequency * overtone_multiplier + LFTri.ar(SinOsc.kr(6.5, 0, 1, frequency * 4), 1 / overtone_multiplier, frequency / 2));
 	};
 	tone = tone / (1 + num_overtones);
 
