@@ -9,7 +9,6 @@ SynthDef.new("flute", {
 	arg frequency=440, amplitude=0.05;
 
 	//Less important parameters to tune the sound to actually make it sound like a flute.
-	var noise_resonators = 6; //How often the noise profile is resonating.
 	var resonant_cutoff = 2000; //Waveform collapses in flute above this frequency due to width of the tube not being able to sustain those frequencies.
 	var num_overtones = 2;
 
@@ -18,17 +17,7 @@ SynthDef.new("flute", {
 
 	//Start with the noise profile as baseline.
 	var wind = LFClipNoise.ar(SampleRate.ir);
-	noise_resonators.do {
-		//Repeat the same noise pattern with reverberation.
-		//The delay in reverberation is precisely the duration of the frequency so that it produces the base note.
-		//Has a distinct saw-wave like effect due to the sharp part of the noise being more prominent.
-		var reverberation = DelayL.ar(wind, 1 / frequency / 32, 1 / frequency / 32, 0.5);
-		reverberation = LPF.ar(reverberation, resonant_cutoff); //Dampen with maximum standing waveform.
-		reverberation = HPF.ar(reverberation, frequency);
-
-		wind = wind + reverberation;
-	};
-	//Resonant filter on the reverb noise produce a brass-like effect.
+	//Resonant filter on the noise produce a brass-like effect.
 	wind = Resonz.ar(wind, frequency, 0.75);
 
 	//Combine the brass sound with a frequency-modulated base tone that makes the basic "dry" sound of the flute.
