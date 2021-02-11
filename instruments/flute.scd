@@ -17,7 +17,7 @@ SynthDef.new("flute", {
 	var tone;
 
 	//Start with the noise profile as baseline.
-	var wind = LFNoise0.ar(SampleRate.ir);
+	var wind = LFClipNoise.ar(SampleRate.ir);
 	noise_resonators.do {
 		//Repeat the same noise pattern with reverberation.
 		//The delay in reverberation is precisely the duration of the frequency so that it produces the base note.
