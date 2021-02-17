@@ -19,6 +19,8 @@ SynthDef.new("flute", {
 	var tone;
 	var tone_envelope;
 	var overtone_envelope;
+	var attack_overtone;
+	var attack_overtone_envelope;
 	var wind_envelope;
 
 	//Start with the noise profile as baseline.
@@ -34,7 +36,7 @@ SynthDef.new("flute", {
 	tone = tone * EnvGen.kr(tone_envelope, doneAction: Done.freeSelf);
 
 	//Add some overtones. These overtones have an earlier onset than the base note.
-	overtone_envelope = Env(levels: [0, 1, 0.7, 0.7, 0], times: [onset_duration, attack - onset_duration, duration - attack - 0.2, 0.2], curve: 'linear');
+	overtone_envelope = Env(levels: [0, 1, 0.8, 0.8, 0], times: [onset_duration, attack - onset_duration, duration - attack - 0.2, 0.2], curve: 'linear');
 	num_overtones.do {
 		arg overtone_index;
 		var overtone_multiplier = 2 ** overtone_index;
@@ -44,6 +46,11 @@ SynthDef.new("flute", {
 		* EnvGen.kr(overtone_envelope, doneAction: Done.freeSelf) * overtone_multiplier;
 	};
 	tone = tone / (1 + num_overtones);
+
+	//Add a new overtone specifically for the attack, a bit louder an octave higher.
+	attack_overtone = SinOsc.ar(frequency * 2 + LFTri.ar(SinOsc.kr(6, 0, 1, frequency * 8), 0, frequency / 2));
+	attack_overtone_envelope = Env(levels: [0, 0.5, 0], times: [attack / 2, attack / 2], curve: 'linear');
+	tone = tone + (attack_overtone * EnvGen.kr(attack_overtone_envelope));
 
 	Out.ar(0,
 		tone * 0.8
