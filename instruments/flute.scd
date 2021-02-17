@@ -5,8 +5,9 @@ SynthDef.new("flute", {
 	Arguments:
 	frequency: Base note frequency.
 	amplitude: Loudness of the output signal.
+	duration: Total duration of the note.
 	*/
-	arg frequency=440, amplitude=0.05;
+	arg frequency=440, amplitude=0.05, duration=3;
 
 	//Less important parameters to tune the sound to actually make it sound like a flute.
 	var resonant_cutoff = 2000; //Waveform collapses in flute above this frequency due to width of the tube not being able to sustain those frequencies.
@@ -14,6 +15,7 @@ SynthDef.new("flute", {
 
 	//Variables we'll need later.
 	var tone;
+	var tone_envelope;
 
 	//Start with the noise profile as baseline.
 	var wind = LFClipNoise.ar(SampleRate.ir / 3);
@@ -29,6 +31,8 @@ SynthDef.new("flute", {
 		tone = tone + SinOsc.ar(frequency * overtone_multiplier + LFTri.ar(SinOsc.kr(6.5, 0, 1, frequency * 4), 1 / overtone_multiplier, frequency / 2));
 	};
 	tone = tone / (1 + num_overtones);
+	tone_envelope = Env(levels: [0, 1, 1, 0], times: [0.1, duration - 0.2, 0.1], curve: 'linear');
+	tone = tone * EnvGen.kr(tone_envelope, doneAction: Done.freeSelf);
 
 	Out.ar(0,
 		tone
