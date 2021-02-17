@@ -18,6 +18,7 @@ SynthDef.new("flute", {
 	//Variables we'll need later.
 	var tone;
 	var tone_envelope;
+	var overtone_envelope;
 	var wind_envelope;
 
 	//Start with the noise profile as baseline.
@@ -29,15 +30,20 @@ SynthDef.new("flute", {
 
 	//Combine the brass sound with a frequency-modulated base tone that makes the basic "dry" sound of the flute.
 	tone = SinOsc.ar(frequency + LFTri.ar(SinOsc.kr(6, 0, 1, frequency * 4), 0, frequency / 2));
+	tone_envelope = Env(levels: [0, 1, 1, 0], times: [0.1, duration - 0.2, 0.1], curve: 'linear');
+	tone = tone * EnvGen.kr(tone_envelope, doneAction: Done.freeSelf);
+
+	//Add some overtones. These overtones have an earlier onset than the base note.
+	overtone_envelope = Env(levels: [0, 1, 0.7, 0.7, 0], times: [onset_duration, attack - onset_duration, duration - attack - 0.2, 0.2], curve: 'linear');
 	num_overtones.do {
 		arg overtone_index;
 		var overtone_multiplier = 2 ** overtone_index;
 
-		tone = tone + SinOsc.ar(frequency * overtone_multiplier + LFTri.ar(SinOsc.kr(6.5, 0, 1, frequency * 4), 1 / overtone_multiplier, frequency / 2));
+		tone = tone
+		+ SinOsc.ar(frequency * overtone_multiplier + LFTri.ar(SinOsc.kr(6.5, 0, 1, frequency * 4), 1 / overtone_multiplier, frequency / 2))
+		* EnvGen.kr(overtone_envelope, doneAction: Done.freeSelf) * overtone_multiplier;
 	};
 	tone = tone / (1 + num_overtones);
-	tone_envelope = Env(levels: [0, 1, 1, 0], times: [0.1, duration - 0.2, 0.1], curve: 'linear');
-	tone = tone * EnvGen.kr(tone_envelope, doneAction: Done.freeSelf);
 
 	Out.ar(0,
 		tone * 0.8
